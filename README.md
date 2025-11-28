@@ -2,7 +2,7 @@
 
 RepoMind is an AI-powered code understanding platform that helps developers navigate complex codebases, analyze commit history, and transcribe engineering meetings. It leverages local LLMs (Ollama), Vector Search (ChromaDB), and RAG (Retrieval-Augmented Generation) to provide context-aware answers.
 
-![RepoMind Dashboard](https://via.placeholder.com/800x400?text=RepoMind+Dashboard+Preview)
+![RepoMind Dashboard](./public/dashboard.png)
 
 ## 🚀 Features
 
@@ -34,7 +34,7 @@ RepoMind is an AI-powered code understanding platform that helps developers navi
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/user-aditi/repomind.git](./public/dashboard.png)
+    git clone [https://github.com/user-aditi/repomind.git](https://github.com/user-aditi/repomind.git)
     cd repomind
     ```
 
