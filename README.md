@@ -34,7 +34,7 @@ RepoMind is an AI-powered code understanding platform that helps developers navi
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/user-aditi/repomind.git](https://github.com/user-aditi/repomind.git)
+    git clone [https://github.com/user-aditi/repomind.git](./public/dashboard.png)
     cd repomind
     ```
 
