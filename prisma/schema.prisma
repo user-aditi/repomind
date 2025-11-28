@@ -1,0 +1,108 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projects  Project[]
+  
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Project {
+  id         String   @id @default(uuid())
+  name       String
+  githubUrl  String
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lastIndexedAt DateTime?  // NEW: Track indexing status
+  indexStatus   String @default("pending")  // NEW: pending|indexing|completed|failed
+  
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commits    Commit[]
+  meetings   Meeting[]
+  sourceCode SourceCode[]
+  
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@unique([userId, githubUrl])  // NEW: Prevent duplicate URLs per user
+}
+
+model SourceCode {
+  id        String   @id @default(uuid())
+  projectId String
+  fileName  String
+  filePath  String
+  language  String?
+  content   String   @db.Text
+  summary   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt  // NEW
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([projectId, language])
+  @@unique([projectId, filePath])  // NEW: Ensure unique file paths
+}
+
+model Commit {
+  id            String   @id @default(uuid())
+  projectId     String
+  commitHash    String
+  commitMessage String   @db.Text
+  commitAuthor  String
+  commitDate    DateTime
+  createdAt     DateTime @default(now())
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, commitHash])
+  @@index([projectId])
+  @@index([projectId, commitDate])
+}
+
+model Meeting {
+  id           String   @id @default(uuid())
+  projectId    String
+  title        String
+  meetingDate  DateTime
+  audioUrl     String?
+  transcript   String?  @db.Text
+  summary      String?  @db.Text
+  status       String   @default("uploaded")  // NEW: uploaded|transcribing|completed|failed
+  createdAt    DateTime @default(now())
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([projectId, meetingDate])
+}
+
+model ErrorLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime @default(now())
+  level     String
+  message   String   @db.Text
+  stack     String?  @db.Text
+  context   Json?
+  userId    String?
+  
+  @@index([timestamp])
+  @@index([level])
+}

@@ -1,0 +1,59 @@
+services:
+  # 1. The Main Database (Metadata, Users, Projects)
+  postgres:
+    image: postgres:15-alpine
+    container_name: repomind-postgres
+    environment:
+      POSTGRES_USER: repomind_user
+      POSTGRES_PASSWORD: repomind_password
+      POSTGRES_DB: repomind_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  # 2. The Vector Database (Stores embeddings for RAG)
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: repomind-chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+    restart: always
+
+  # 3. The LLM Service (The Brain - running Llama 3 locally)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: repomind-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # If you have an NVIDIA GPU, uncomment the next lines to make it fast:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: repomind-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+
+volumes:
+  postgres_data:
+  chromadb_data:
+  ollama_data:
+  redis-data:
